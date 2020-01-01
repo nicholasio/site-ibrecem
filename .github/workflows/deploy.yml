@@ -18,4 +18,4 @@ jobs:
         options: ''
         ssh_options: ''
         src: ''
-        dest: 'ibrecem@tp.web76111.kinghost.net:/home/ibrecem/www/wp-content'
+        dest: 'ibrecem@ftp.web76111.kinghost.net:/home/ibrecem/www/wp-content'
