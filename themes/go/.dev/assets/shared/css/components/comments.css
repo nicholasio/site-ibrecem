@@ -1,0 +1,149 @@
+/*! Comments */
+.comment-form-cookies-consent input[type="checkbox"] + label {
+	font-family: var(--theme-body--font);
+	font-size: var(--theme-comment-p--font-size, 0.85rem);
+	font-weight: var(--theme-body--weight, 400);
+	letter-spacing: 0;
+	line-height: 1.4;
+	line-height: var(--theme-body--leading);
+	max-width: 25rem;
+	padding-left: 10rem;
+	text-transform: none;
+}
+
+.comments-area__wrapper {
+	margin-left: auto;
+	margin-right: auto;
+	max-width: var(--theme-max-w-base);
+	width: calc(100% - var(--theme-block-padding-x));
+
+	@media (--large) {
+		width: calc(100% - var(--theme-block-padding-x));
+	}
+}
+
+.comments-area {
+	margin-bottom: var(--vertical-rhythm--lrg);
+
+	/* Post Comment button */
+	& input[type="submit"] {
+		@mixin button;
+
+		&:hover,
+		&:focus,
+		&:active {
+			@mixin button-hover;
+		}
+	}
+
+	/* Each response */
+	& article {
+		margin: 3rem 0;
+	}
+
+	& .comments-title {
+		font-size: var(--theme-h3--font-size);
+	}
+
+	& .comment-reply-title {
+		font-size: var(--theme-h3--font-size);
+
+		& small {
+			font-size: 50%;
+		}
+	}
+
+	& .comment-content * {
+		font-size: var(--theme-comments--font-size, 0.975rem);
+	}
+
+	/* Response list */
+	& .commentlist {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+
+		/* Don't need to see numeric count */
+		& li::before {
+			display: none;
+		}
+
+		/* Indent replies only once */
+		& > li > .children {
+			margin-left: 2rem;
+		}
+	}
+
+	/* Header of each comment */
+	& .comment-meta {
+
+		& img,
+		& cite {
+			display: block;
+		}
+
+		/* Comment Gravatar */
+		& img {
+			border-radius: 100px;
+			margin: 0 0 1rem;
+		}
+
+		/* Comment author */
+		& cite {
+			font-style: normal;
+			margin: 0 1rem 0 0;
+		}
+
+		/* Comment Timestamp */
+		& > a {
+			font-size: 0.75rem;
+		}
+	}
+
+	/* Actual response form */
+	& .comment-form {
+
+		& > p {
+			margin: 0;
+		}
+
+		& .form-submit {
+			margin-top: 2.5rem;
+		}
+	}
+
+	& p.comment-notes {
+		font-size: var(--theme-comment-p--font-size, 0.8rem);
+		margin-bottom: 2.25rem;
+	}
+
+	& p.logged-in-as {
+		font-size: var(--theme-comment-p--font-size, 0.8rem);
+		margin-bottom: 2.25rem;
+	}
+
+	@media (--medium) {
+
+		/* Response list */
+		& .commentlist {
+
+			/* Indent replies only once */
+			& > li > .children {
+				margin-left: 4rem;
+			}
+		}
+
+		/* Header of each comment */
+		& .comment-meta {
+			align-items: center;
+			display: flex;
+
+			/* Comment Gravatar */
+			& img {
+				display: inline;
+				margin: 0 1rem 0 0;
+			}
+		}
+	}
+}
+

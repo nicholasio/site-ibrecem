@@ -1,0 +1,35 @@
+/*! Image */
+.wp-block-image {
+
+	&.alignfull,
+	&.alignwide {
+		margin-bottom: var(--vertical-rhythm--lrg);
+		margin-top: var(--vertical-rhythm--lrg);
+	}
+
+	& img {
+		display: block;
+	}
+
+	& .alignleft {
+		margin-right: 2rem;
+	}
+
+	& .alignright {
+		margin-left: 2rem;
+	}
+
+	& figure.alignleft,
+	& figure.alignright {
+		margin-bottom: 1.5rem;
+		margin-top: 0.7rem;
+	}
+}
+
+.wp-block-coblocks-pricing-table-item {
+	width: 100%;
+}
+
+.wp-block-image.alignfull + .wp-block-gallery {
+	margin-top: 16px !important;
+}

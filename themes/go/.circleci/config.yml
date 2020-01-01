@@ -1,0 +1,285 @@
+workflows:
+  version: 2
+  main:
+    jobs:
+      # Support PHP Versions
+      # http://php.net/supported-versions.php
+      - php56-phpcs: # EOL December 31, 2018, latest PHP version supported by Go
+          filters:
+            tags:
+              only: /.*/
+      - php73-phpcs: # Will be deprecated on 30 Nov 2020
+          filters:
+            tags:
+              only: /.*/
+      - unit-tests:
+          filters:
+            tags:
+              only: /.*/
+      - theme-check:
+          filters:
+            tags:
+              only: /.*/
+      - a11y-tests:
+          filters:
+            tags:
+              only: /.*/
+      - deploy:
+          requires:
+            - php56-phpcs
+            - php73-phpcs
+            - unit-tests
+            - theme-check
+            - a11y-tests
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+
+version: 2
+jobs:
+  php56-phpcs:
+    docker:
+      - image: circleci/php:5.6
+    steps:
+      - checkout
+      - run:
+          name: "Setup Environment Variables"
+          command: |
+            echo "export PATH=$HOME/.composer/vendor/bin:$PATH" >> $BASH_ENV
+            source /home/circleci/.bashrc
+      - run:
+          name: "Install Dependencies"
+          command: |
+            composer global require wp-coding-standards/wpcs
+            phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
+      - run:
+          name: "Run PHPCS"
+          command: phpcs --standard=phpcs.xml --extensions=php --colors -s -p -v .
+
+  php73-phpcs:
+    docker:
+      - image: circleci/php:7.3.8
+    steps:
+      - checkout
+      - run:
+          name: "Setup Environment Variables"
+          command: |
+            echo "export PATH=$HOME/.composer/vendor/bin:$PATH" >> $BASH_ENV
+            source /home/circleci/.bashrc
+      - run:
+          name: "Install Dependencies"
+          command: |
+            composer global require wp-coding-standards/wpcs
+            phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
+      - run:
+          name: "Run PHPCS"
+          command: phpcs --standard=phpcs.xml --extensions=php --colors -s -p -v .
+
+  unit-tests:
+    docker:
+      - image: circleci/php:7.3.8-apache-node-browsers
+      - image: circleci/mysql:5.7
+    steps:
+      - checkout
+      - run:
+          name: Update hosts
+          command: echo 127.0.0.1 go.test | sudo tee -a /etc/hosts
+      - run:
+          name: Update npm
+          command: sudo npm install -g npm@latest
+      - run:
+          name: Install rsync
+          command: sudo apt install rsync
+      - run:
+          name: Install Code Climate test reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+            ./cc-test-reporter before-build
+      - run:
+          name: Install WPCLI
+          command: |
+            curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+            chmod +x wp-cli.phar
+            sudo mv wp-cli.phar /usr/local/bin/wp
+      - run:
+          name: Install gettext
+          command: sudo apt-get install gettext
+      - run:
+          name: Setup WordPress site
+          command: bash .dev/deploy-scripts/install-wp-tests.sh wordpress_test root '' 127.0.0.1 latest
+      - run:
+          name: Install Composer packages
+          command: composer install
+          working_directory: /tmp/wordpress/wp-content/themes/go
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Install node packages
+          command: npm install
+          working_directory: /tmp/wordpress/wp-content/themes/go
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      - run:
+          name: Build the Go Theme
+          command: npm run build
+          working_directory: /tmp/wordpress/wp-content/themes/go
+      - run:
+          name: "Run PHPUnit - Single Site - Generate Coverage Reports"
+          command: composer run test -- --coverage-html=/tmp/artifacts/code-coverage/phpunit/html --log-junit=/tmp/artifacts/code-coverage/phpunit/results.xml --coverage-clover=clover.xml
+          working_directory: /tmp/wordpress/wp-content/themes/go
+      - run:
+          name: "Deploy Coverage to Code Climate"
+          command: ./cc-test-reporter after-build -t clover --exit-code $?
+          working_directory: /tmp/wordpress/wp-content/themes/go
+      - store_artifacts:
+          path: /tmp/artifacts/code-coverage/
+          destination: phpunit-coverage
+      - store_test_results:
+          path: /tmp/artifacts/code-coverage/
+
+  theme-check:
+    docker:
+      - image: circleci/php:7.3.8-apache-node-browsers
+      - image: circleci/mysql:5.7
+    steps:
+      - checkout
+      - run:
+          name: Update npm
+          command: sudo npm install -g npm@latest
+      - run:
+          name: Install rsync
+          command: sudo apt install rsync
+      - run:
+          name: Install gettext
+          command: sudo apt-get install gettext
+      - run:
+          name: Install Grunt.js
+          command: sudo npm install -g grunt-cli
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Install node packages
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      - run:
+          name: Install WPCLI
+          command: |
+            curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+            chmod +x wp-cli.phar
+            sudo mv wp-cli.phar /usr/local/bin/wp
+      - run:
+          name: Build the Go Theme
+          command: npm run build
+      - run:
+          name: Setup WordPress site and install the Theme Check package
+          command: bash .dev/deploy-scripts/install-wp-tests.sh wordpress_test root '' 127.0.0.1 latest
+      - run:
+          name: Run theme check
+          command: wp themecheck --theme=go --no-interactive --path=/tmp/wordpress
+
+  a11y-tests:
+    docker:
+      - image: circleci/php:7.3.8-apache-node-browsers
+      - image: circleci/mysql:5.7
+    steps:
+      - checkout
+      - run:
+          name: Update hosts
+          command: echo 127.0.0.1 go.test | sudo tee -a /etc/hosts
+      - run:
+          name: Update npm
+          command: sudo npm install -g npm@latest
+      - run:
+          name: Install rsync
+          command: sudo apt install rsync
+      - run:
+          name: Install gettext
+          command: sudo apt-get install gettext
+      - run:
+          name: Install Grunt.js
+          command: sudo npm install -g grunt-cli
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Install node packages
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      - run:
+          name: Install WPCLI
+          command: |
+            curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+            chmod +x wp-cli.phar
+            sudo mv wp-cli.phar /usr/local/bin/wp
+      - run:
+          name: Build the Go Theme
+          command: npm run build
+      - run:
+          name: Setup WordPress site
+          command: bash .dev/deploy-scripts/install-wp-tests.sh wordpress_test root '' 127.0.0.1 latest
+      - run:
+          name: Run a11y tests
+          command: |
+            RESULTS=$(npm run test-a11y)
+            # rerun tests to display the formatted output
+            npm run test-a11y
+            if [[ $RESULTS != *"All accessibility tests have passed"* ]]; then
+              exit 1
+            fi
+
+  deploy:
+    docker:
+      - image: circleci/golang:latest-node-browsers-legacy
+    steps:
+      - checkout
+      - run:
+          name: Update npm
+          command: sudo npm install -g npm@latest
+      - run:
+          name: Install Grunt.js
+          command: sudo npm install -g grunt-cli
+      - run:
+          name: Install PHP
+          command: sudo apt-get install php libapache2-mod-php php-mbstring
+      - run:
+          name: Install gettext
+          command: sudo apt-get install gettext
+      - run:
+          name: Install WPCLI
+          command: |
+            curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+            chmod +x wp-cli.phar
+            sudo mv wp-cli.phar /usr/local/bin/wp
+      - run:
+          name: Install ghr
+          command: |
+            go get -u github.com/tcnksm/ghr
+      - run:
+          name: Install rsync
+          command: sudo apt install rsync
+      - run:
+          name: Install node packages
+          command: npm install
+      - run:
+          name: Build the Go Theme
+          command: |
+            npm run build
+            mkdir -p go
+            mkdir -p /tmp/artifacts
+            rsync -av --exclude-from ~/project/.distignore --delete ~/project/. ./go
+            zip -r /tmp/artifacts/go.zip ./go
+      - deploy:
+          name: Deploy a new release to GitHub
+          command: ghr -t ${GH_ACCESS_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} /tmp/artifacts
+      - store_artifacts:
+          path: /tmp/artifacts

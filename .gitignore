@@ -1,0 +1,5 @@
+.DS_Store
+uploads
+vendor
+node_modules
+upgrade

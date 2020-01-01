@@ -1,0 +1,25 @@
+/*! Links */
+a {
+	color: hsl(var(--theme-link--color, var(--theme-color-primary)));
+	text-decoration: underline;
+
+	&:hover,
+	&:active {
+		color: hsl(var(--theme-link--color-interactive, var(--theme-color-text)));
+		outline: 0;
+	}
+
+	&:focus {
+		@mixin outline;
+	}
+}
+
+p,
+li,
+ul,
+ol {
+
+	& a:focus {
+		outline-width: thin;
+	}
+}

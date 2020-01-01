@@ -1,0 +1,36 @@
+html {
+	box-sizing: border-box;
+	font-size: 100%;
+}
+
+::-moz-selection {
+	background-color: hsl(var(--theme-selection--bg, var(--theme-color-primary)));
+	color: hsl(var(--theme-selection--color, inherit));
+}
+
+::selection {
+	background-color: hsl(var(--theme-selection--bg, var(--theme-color-primary)));
+	color: hsl(var(--theme-selection--color, var(--color-white)));
+
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: inherit;
+}
+
+body {
+	overflow-x: hidden;
+}
+
+input,
+select,
+optgroup,
+textarea {
+	color: $color__text-main;
+	font-family: var(--theme-body--font);
+	font-weight: var(--theme-body--weight, 400);
+	line-height: var(--theme-body--leading);
+	text-rendering: optimizeLegibility;
+}

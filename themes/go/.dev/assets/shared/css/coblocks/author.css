@@ -1,0 +1,14 @@
+/*! CoBlocks: Author */
+.wp-block-coblocks-author {
+	border-radius: var(--coblocks-author--radius, 0);
+	padding: var(--coblocks-author--padding, 2.5rem);
+
+	& p ~ .wp-block-button {
+		margin-bottom: 10px !important;
+		margin-top: 1.5em !important;
+	}
+}
+
+.wp-block-coblocks-author__name {
+	color: hsl(var(--coblocks-author--color-name, var(--theme-color-heading)));
+}

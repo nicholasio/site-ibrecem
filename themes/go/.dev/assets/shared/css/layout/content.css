@@ -1,0 +1,165 @@
+/*! Layout: Content Area */
+.content-area__wrapper {
+	--double-padding: calc(var(--theme-block-padding-x) * 2);
+	margin-left: auto;
+	margin-right: auto;
+	max-width: var(--theme-max-w-base);
+	width: calc(100% - var(--double-padding));
+}
+
+.content-area > * {
+	margin-bottom: var(--vertical-rhythm);
+	margin-top: var(--vertical-rhythm);
+
+	&:not(p):not(ul):not(ol):not(address):not(.wp-block-spacer):not(.wp-block-separator):not(.wp-block-image):not(.wp-block-file):not(.wp-block-preformatted):not(.wp-block-verse):not(.wp-block-categories-dropdown):not(.wp-block-archives-dropdown):not(.wp-block-code):not(.wp-block-coblocks-alert):not(.wp-block-coblocks-accordion):not(.wp-block-coblocks-author) {
+		margin-bottom: var(--vertical-rhythm--lrg);
+		margin-top: var(--vertical-rhythm--lrg);
+	}
+
+	/* Remove margin from nested child blocks */
+	& > *:first-child {
+		margin-top: 0;
+	}
+
+	& > *:last-child {
+		margin-bottom: 0;
+	}
+
+	/* Remove margin from the very first block */
+	&:first-child {
+		margin-top: calc(var(--vertical-rhythm--lrg) * 0.55) !important;
+	}
+
+	/* Apply the largest spacing value to the last item that is not .alignfull */
+	&:not(.alignfull):last-child {
+		margin-bottom: var(--vertical-rhythm--lrg) !important;
+	}
+
+	/*! Account for the last block being .alignfull */
+	& > .alignfull:last-child {
+		margin-bottom: var(--vertical-rhythm--lrg) !important;
+	}
+
+	&.mt-0 {
+		margin-top: 0 !important;
+	}
+
+	&.alignleft,
+	&.alignright {
+		margin-top: 0 !important;
+	}
+}
+
+.hfeed article {
+	margin-bottom: var(--vertical-rhythm--lrg);
+}
+
+/* Account for vertical spacing on hfeed. */
+.hfeed article .content-area > *:first-child {
+	margin-top: calc(var(--vertical-rhythm--lrg) * 0.55) !important;
+}
+
+.hfeed article .content-area > *:last-child {
+	margin-bottom: 0 !important;
+}
+
+/* Account for the first block if we have a featured image. */
+.has-featured-image .content-area > *:first-child {
+	margin-top: var(--vertical-rhythm--lrg) !important;
+}
+
+/* Account for the first block being .alignfull */
+body:not(.single-post):not(.has-page-titles) {
+
+	& .content-area > *:first-child.alignfull,
+	& .content-area > *:first-child.wp-block-gallery {
+		margin-top: 0 !important;
+	}
+}
+
+/* The page title is never shown on the homepage. */
+body.home {
+
+	& .content-area > *:first-child.alignfull {
+		margin-top: 0 !important;
+	}
+}
+
+/* Remove .alignfull margin if there is a footer background enabled */
+.has-footer-background .content-area > *:last-child.alignfull:not(.wp-block-coblocks-gallery-masonry) {
+	margin-bottom: 0 !important;
+}
+
+.single-post.has-comments-open .content-area > *:last-child {
+	margin-bottom: var(--vertical-rhythm--lrg) !important;
+}
+
+.content-area {
+
+	& p ~ {
+
+		& blockquote,
+		& .wp-block-cover:not(.alignfull):not(.alignwide),
+		& .wp-block-coblocks-accordion,
+		& .wp-block-coblocks-author,
+		& figure:not(.alignfull):not(.alignwide) {
+			margin-bottom: var(--vertical-rhythm--med) !important;
+			margin-top: var(--vertical-rhythm--med) !important;
+		}
+
+		& .wp-block-columns,
+		& .wp-block-coblocks-row {
+			margin-top: var(--vertical-rhythm) !important;
+		}
+
+		& .coblocks-form,
+		& .wp-block-button,
+		& .wp-block-separator,
+		& .wp-block-coblocks-dynamic-separator,
+		& .wp-block-pullquote:not(.is-style-solid-color):not(.alignleft):not(.alignright) {
+			margin-bottom: calc(var(--vertical-rhythm--med) * 1.5) !important;
+			margin-top: calc(var(--vertical-rhythm--med) * 1.15) !important;
+		}
+
+		& .wp-block-coblocks-buttons {
+			margin-top: calc(var(--vertical-rhythm--med) * 1.15) !important;
+		}
+	}
+
+	& .wp-block-columns + .wp-block-button,
+	& .wp-block-columns + .wp-block-coblocks-buttons {
+		margin-top: calc(var(--vertical-rhythm--lrg) * -0.65) !important;
+	}
+
+	& > h1,
+	& > h2,
+	& > h3,
+	& > h4,
+	& > h5,
+	& > h6 {
+
+		& + p,
+		& + ol,
+		& + ul:not(.wp-block-gallery),
+		& + dl {
+			margin-top: calc(var(--vertical-rhythm--lrg) * -0.825) !important;
+		}
+
+		& + .wp-block-button,
+		& + .wp-block-coblocks-buttons {
+			margin-top: calc(var(--vertical-rhythm--lrg) * -0.65) !important;
+		}
+
+		& + .wp-block-coblocks-logos {
+			margin-top: calc(var(--vertical-rhythm--lrg) * -0.65) !important;
+		}
+
+		& + .wp-block-coblocks-features {
+			margin-top: calc(var(--vertical-rhythm--lrg) * -0.5) !important;
+		}
+
+		& + .wp-block-separator {
+			margin-top: calc(var(--vertical-rhythm--lrg) * -0.75) !important;
+		}
+	}
+}

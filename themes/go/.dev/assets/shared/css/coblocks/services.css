@@ -1,0 +1,47 @@
+/*! CoBlocks: Services */
+.wp-block-coblocks-service {
+
+	&.alignfull {
+		padding-left: var(--theme-block-padding-x);
+		padding-right: var(--theme-block-padding-x);
+	}
+
+	& h2,
+	& h3,
+	& h4,
+	& h5,
+	& h6 {
+		margin-bottom: var(--coblocks-services--heading-margin-bottom);
+		margin-top: var(--coblocks-services--heading-margin-top);
+	}
+}
+
+.wp-block-coblocks-service__content {
+
+	& p ~ .wp-block-button {
+		margin-top: 2.5rem !important;
+	}
+}
+
+.wp-block-coblocks-services[data-columns="2"] > .wp-block-coblocks-service {
+	@media (--medium) {
+		max-width: calc(100% / 2 - 2em);
+	}
+}
+
+.wp-block-coblocks-services[data-columns="3"] > .wp-block-coblocks-service {
+	@media (--large) {
+		max-width: calc(100% / 3 - 2em);
+	}
+}
+
+.wp-block-coblocks-services[data-columns="4"] > .wp-block-coblocks-service {
+	@media (--small) {
+		max-width: calc(100% / 2 - 2em);
+	}
+
+	@media (--large) {
+		max-width: calc(100% / 4 - 2em);
+	}
+}
+
