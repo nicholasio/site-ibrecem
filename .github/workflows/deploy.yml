@@ -12,11 +12,11 @@ jobs:
     - name: Deploy via SSH
       uses: easingthemes/ssh-deploy@v2.0.7
       with:
-        TARGET: /home/ibrecem/www/wp-content
+        TARGET: www/wp-content
       env:
         ARGS: -avzr --delete
         SOURCE:
         REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}
         REMOTE_USER: ${{ secrets.DEPLOY_USER }}
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        TARGET: /home/ibrecem/www/wp-content
+        TARGET: www/wp-content
