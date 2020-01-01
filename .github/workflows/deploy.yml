@@ -13,7 +13,7 @@ jobs:
       uses: easingthemes/ssh-deploy@v2.0.7
       env:
         ARGS: -avzr --delete
-        SOURCE: /
+        SOURCE:
         TARGET: /www/wp-content
         REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}
         REMOTE_USER: ${{ secrets.DEPLOY_USER }}
